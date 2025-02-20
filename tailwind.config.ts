@@ -11,6 +11,8 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        bolderCard: "#010409",
+        toDoCard: "#151B23",
       },
     },
   },
