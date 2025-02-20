@@ -12,8 +12,9 @@ interface EditDashboardProps {
     initialPosition: number;
 }
 
+const initialState: State = { message: null, errors: {} };
+
 export default function EditDashboard({ id, initialName, initialPosition }: EditDashboardProps) {
-    const initialState: State = { message: null, errors: {} };
     const editHandler = async (state: State, formData: FormData) => {
         return await editDashboard(id, initialPosition, formData);
     };
@@ -47,10 +48,10 @@ export default function EditDashboard({ id, initialName, initialPosition }: Edit
                         className="p-2 bg-black rounded border-[0.5px] hover:bg-gray-500 text-red-500"
                         onClick={routeBack}
                     >
-                        취소
+                        Cancel
                     </button>
                     <button type="submit" className="p-2 bg-black rounded border-[0.5px] hover:bg-gray-500 text-blue-500">
-                        수정
+                        Edit
                     </button>
                 </div>
             </form>
