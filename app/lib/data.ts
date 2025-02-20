@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import { DashboardType } from "../_types/dashboardType";
+import { DashboardWithTask } from "../_types/dashboardType";
 
 export default async function fetchDashboards() {
     try {
@@ -16,7 +16,7 @@ export default async function fetchDashboards() {
         const dashboardsWithTasks = dashboards.map((dashboard) => ({
             ...dashboard,
             tasks: tasks.filter((task) => task.dashboard_id === dashboard.id),
-        })) as DashboardType[];
+        })) as DashboardWithTask[];
 
         return dashboardsWithTasks;
     } catch (error) {

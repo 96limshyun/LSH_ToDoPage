@@ -1,11 +1,11 @@
 import fetchDashboards from "@/app/lib/data";
-import { DashboardType } from "@/app/_types/dashboardType";
+import { DashboardWithTask } from "@/app/_types/dashboardType";
 import { PlusIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import DashboardItem from "./DashboardItem";
 
 export default async function Dashboards() {
-    const dashboards: DashboardType[] = await fetchDashboards();
+    const dashboards: DashboardWithTask[] = await fetchDashboards();
 
     return (
         <div className="flex w-full h-full gap-4">

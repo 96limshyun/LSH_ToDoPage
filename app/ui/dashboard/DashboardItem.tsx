@@ -1,10 +1,10 @@
-import { DashboardType } from "@/app/_types/dashboardType";
+import { DashboardWithTask } from "@/app/_types/dashboardType";
 import { PlusIcon, EllipsisHorizontalIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import TaskItem from "../task/TaskItem";
 
 interface DashboardItemProps {
-    dashboard: DashboardType;
+    dashboard: DashboardWithTask;
 }
 
 export default function DashboardItem({ dashboard }: DashboardItemProps) {

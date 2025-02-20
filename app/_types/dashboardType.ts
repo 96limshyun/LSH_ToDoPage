@@ -11,6 +11,6 @@ export interface Dashboard {
     position: number;
 }
 
-export interface DashboardType extends Dashboard {
+export interface DashboardWithTask extends Dashboard {
     tasks: Task[];
 }
