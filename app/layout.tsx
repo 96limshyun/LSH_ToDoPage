@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className="flex justify-center items-center h-screen p-10 flex-col gap-4 min-w-[1280] overflow-auto">
+            <body className="flex justify-center items-center h-screen p-10 flex-col gap-4 min-w-[1280]">
                 <div className="w-full">
                     <h1 className="font-bold text-2xl">
                         LSH TO DO PAGE

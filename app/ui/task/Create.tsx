@@ -1,12 +1,16 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { XMarkIcon } from "@heroicons/react/20/solid";
+import { useRef } from "react";
+import useOnClickOutside from "@/app/_hooks/useOnClickOutside";
 
 export default function CreateTask() {
     const router = useRouter();
+    const modalRef = useRef<HTMLDivElement>(null);
 
+    useOnClickOutside(modalRef, () => router.back());
     return (
-        <div className="bg-defaultCard shadow-lg w-[300px] h-[200px] border-[0.5px] rounded flex flex-col ">
+        <div ref={modalRef} className="bg-defaultCard shadow-lg w-[300px] h-[200px] border-[0.5px] rounded flex flex-col ">
                 <div className="flex p-4 justify-between">
                     <h1>Create Task</h1>
                     <XMarkIcon
