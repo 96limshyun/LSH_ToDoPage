@@ -6,7 +6,7 @@ export default async function fetchDashboards() {
         const sql = neon(process.env.DATABASE_URL!);
 
         const dashboards = await sql`
-        SELECT id, name, position FROM dashboards;
+        SELECT id, name, position FROM dashboards ORDER BY position ASC;
     `;
 
     const tasks = await sql`
