@@ -16,7 +16,7 @@ export async function GET() {
       );
     `;
         await sql`
-        CREATE TABLE IF NOT EXISTS todos (
+        CREATE TABLE IF NOT EXISTS tasks (
         id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
         content VARCHAR(255) NULL,
         position INT NOT NULL,
@@ -36,7 +36,7 @@ export async function GET() {
         // const [backlogId, inProgressId, doneId] = insertedDashboards.map(row => row.id);
 
         // await sql`
-        //     INSERT INTO todos (content, position, dashboard_id)
+        //     INSERT INTO tasks (content, position, dashboard_id)
         //     VALUES
         //     ('과제하기', 1, ${backlogId}),
         //     ('UI 디자인', 2, ${backlogId}),
@@ -52,6 +52,7 @@ export async function GET() {
             { status: 200 }
         );
     } catch (error) {
+        console.error("데이터 베이스 초기화 실패:", error);
         throw new Error("데이터베이스 초기화에 실패했습니다.");
     }
 }

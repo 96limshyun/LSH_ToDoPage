@@ -1,12 +1,16 @@
-export interface TaskType {
-    id: number;
-    content: string;
+export interface Task {
+    id: string;
+    content: string | null;
     position: number;
     dashboard_id: string;
 }
 
-export interface DashboardType {
-    id: number;
+export interface Dashboard {
+    id: string;
     name: string;
     position: number;
+}
+
+export interface DashboardType extends Dashboard {
+    tasks: Task[];
 }
