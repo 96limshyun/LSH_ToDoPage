@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { EllipsisHorizontalIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
+import useOnClickOutside from "@/app/_hooks/useOnClickOutside";
 
 interface MenuButtonProps {
     id: string;
@@ -8,9 +9,11 @@ interface MenuButtonProps {
 
 export default function MenuButton({ id }: MenuButtonProps) {
     const [isOpen, setOpen] = useState(false);
-
+    const menuRef = useRef<HTMLDivElement>(null);
+    useOnClickOutside(menuRef, () => setOpen(false));
+    
     return (
-        <div className="relative">
+        <div ref={menuRef} className="relative">
             <button onClick={() => setOpen(!isOpen)}>
                 <EllipsisHorizontalIcon className="w-6 h-6 cursor-pointer" />
             </button>
