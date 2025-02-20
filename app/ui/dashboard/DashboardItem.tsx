@@ -10,7 +10,7 @@ interface DashboardItemProps {
 }
 
 export default function DashboardItem({ dashboard }: DashboardItemProps) {
-    const {id, name, tasks} = dashboard;
+    const {id, name, position,tasks} = dashboard;
 
     return (
         <div
@@ -19,7 +19,7 @@ export default function DashboardItem({ dashboard }: DashboardItemProps) {
             <div className="flex flex-col gap-6 p-4">
                 <div className="text-xl font-bold flex justify-between">
                     <h2>{name}</h2>
-                    <MenuButton id={id}/>
+                    <MenuButton id={id} name={name} position={position}/>
                 </div>
                 <div className="flex flex-col gap-2">
                     {tasks.map((task) => (
