@@ -27,7 +27,7 @@ export default function DashboardItem({ dashboard }: DashboardItemProps) {
                     ))}
                 </div>
             </div>
-            <Link href={`/task/create`} scroll={false} className="p-2 rounded-b-md flex gap-2 hover:bg-defaultCard">
+            <Link href={`/task/create/${id}`} scroll={false} className="p-2 rounded-b-md flex gap-2 hover:bg-defaultCard">
                 <PlusIcon className="w-6 h-6" />
                 <div>Add item</div>
             </Link>
