@@ -1,5 +1,6 @@
 import { neon } from "@neondatabase/serverless";
 import { DashboardWithTask } from "../_types/dashboardType";
+import { ERROR_MESSAGES } from "../_contants";
 
 export default async function fetchDashboards() {
     try {
@@ -10,7 +11,7 @@ export default async function fetchDashboards() {
     `;
 
     const tasks = await sql`
-        SELECT id::uuid, content, position, dashboard_id::uuid FROM tasks;
+        SELECT id, content, position, dashboard_id FROM tasks ORDER BY position ASC;
     `;
 
         const dashboardsWithTasks = dashboards.map((dashboard) => ({
@@ -20,7 +21,7 @@ export default async function fetchDashboards() {
 
         return dashboardsWithTasks;
     } catch (error) {
-        console.error("Failed to fetch dashboards:", error);
-        throw new Error("데이터를 불러오는 데 실패했습니다.");
+        console.error(ERROR_MESSAGES.GET_FAIL, error);
+        throw new Error(ERROR_MESSAGES.GET_FAIL);
     }
 }

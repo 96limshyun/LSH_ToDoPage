@@ -2,9 +2,9 @@
 import { useRouter } from "next/navigation";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useRef, useActionState } from "react";
-import useOnClickOutside from "@/app/_hooks/useOnClickOutside";
 import { createDashboard } from "@/app/lib/dashBoardAction";
 import { State } from "@/app/_types";
+import useOnClickOutside from "@/app/_hooks/useOnClickOutside";
 
 const initialState: State = { message: null, errors: {} };
 
@@ -41,10 +41,10 @@ export default function CreateDashboard() {
                         className="p-2 bg-black rounded border-[0.5px] hover:bg-gray-500 text-red-500"
                         onClick={routeBack}
                     >
-                        취소
+                        Cancel
                     </button>
                     <button type="submit" className="p-2 bg-black rounded border-[0.5px] hover:bg-gray-500 text-blue-500">
-                        생성
+                        Create
                     </button>
                 </div>
             </form>
