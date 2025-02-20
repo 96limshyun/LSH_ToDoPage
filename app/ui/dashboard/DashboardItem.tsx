@@ -1,14 +1,16 @@
+"use client";
 import { DashboardWithTask } from "@/app/_types/dashboardType";
-import { PlusIcon, EllipsisHorizontalIcon } from "@heroicons/react/20/solid";
+import { PlusIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import TaskItem from "../task/TaskItem";
+import MenuButton from "./MenuButton";
 
 interface DashboardItemProps {
     dashboard: DashboardWithTask;
 }
 
 export default function DashboardItem({ dashboard }: DashboardItemProps) {
-    const { name, tasks} = dashboard;
+    const {id, name, tasks} = dashboard;
 
     return (
         <div
@@ -17,9 +19,7 @@ export default function DashboardItem({ dashboard }: DashboardItemProps) {
             <div className="flex flex-col gap-6 p-4">
                 <div className="text-xl font-bold flex justify-between">
                     <h2>{name}</h2>
-                    <Link href={`/dashboard/edit/${dashboard.id}`}>
-                        <EllipsisHorizontalIcon className="w-6 h-6 cursor-pointer" />
-                    </Link>
+                    <MenuButton id={id}/>
                 </div>
                 <div className="flex flex-col gap-2">
                     {tasks.map((task) => (
@@ -27,10 +27,10 @@ export default function DashboardItem({ dashboard }: DashboardItemProps) {
                     ))}
                 </div>
             </div>
-            <div className="p-2 rounded-b-md flex gap-2 hover:bg-toDoCard">
+            <Link href={`/task/create`} scroll={false} className="p-2 rounded-b-md flex gap-2 hover:bg-defaultCard">
                 <PlusIcon className="w-6 h-6" />
                 <div>Add item</div>
-            </div>
+            </Link>
         </div>
     );
 }

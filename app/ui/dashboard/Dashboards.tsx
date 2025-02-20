@@ -12,7 +12,7 @@ export default async function Dashboards() {
             {dashboards.map((dashboard) => (
                 <DashboardItem key={dashboard.id} dashboard={dashboard} />
             ))}
-            <Link href="#" className="w-6 h-6 bg-toDoCard border-[0.5px] rounded cursor-pointer flex items-center justify-center">
+            <Link href="/dashboard/create" scroll={false} className="w-6 h-6 bg-defaultCard border-[0.5px] rounded cursor-pointer flex items-center justify-center">
                 <PlusIcon className="w-6 h-6" />
             </Link>
         </div>
