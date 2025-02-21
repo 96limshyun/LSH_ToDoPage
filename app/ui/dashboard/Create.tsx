@@ -9,7 +9,19 @@ import useOnClickOutside from "@/app/_hooks/useOnClickOutside";
 const initialState: State = { message: null, errors: {} };
 
 export default function CreateDashboard() {
-    const [state, formAction] = useActionState(createDashboard, initialState);
+    const createHandler = async (
+        state: State | undefined,
+        formData: FormData
+    ) => {
+        const result = await createDashboard(state!, formData);
+        if (result?.errors) return result;
+
+        router.back();
+
+        return result;
+    };
+
+    const [state, formAction] = useActionState(createHandler, initialState);
 
     const router = useRouter();
     const modalRef = useRef<HTMLDivElement>(null);
@@ -31,9 +43,12 @@ export default function CreateDashboard() {
                 />
             </div>
             <form action={formAction} className="flex flex-col p-4 gap-4">
-                <input name="name" className="p-2 bg-black rounded border-[0.5px]" />
+                <input
+                    name="name"
+                    className="p-2 bg-black rounded border-[0.5px]"
+                />
 
-                {state.errors?.name && (
+                {state?.errors?.name && (
                     <p className="text-sm text-red-500">{state.errors.name}</p>
                 )}
                 <div className="flex justify-end gap-2 text-sm font-bold ">
@@ -43,7 +58,10 @@ export default function CreateDashboard() {
                     >
                         Cancel
                     </button>
-                    <button type="submit" className="p-2 bg-black rounded border-[0.5px] hover:bg-gray-500 text-blue-500">
+                    <button
+                        type="submit"
+                        className="p-2 bg-black rounded border-[0.5px] hover:bg-gray-500 text-blue-500"
+                    >
                         Create
                     </button>
                 </div>

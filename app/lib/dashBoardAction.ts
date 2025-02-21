@@ -3,7 +3,6 @@
 import { neon } from "@neondatabase/serverless";
 import { State } from "../_types";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { FIRST_ROW, ERROR_MESSAGES, DEFAULT_POSITION, POSITION_INCREMENT, HOME_PATH } from "../_contants";
 
 export async function createDashboard(prevState: State, formData: FormData) {
@@ -37,7 +36,6 @@ export async function createDashboard(prevState: State, formData: FormData) {
         };
     }
     revalidatePath(HOME_PATH);
-    redirect(HOME_PATH);
 }
 
 export async function editDashboard(id: string, initialPosition: number, formData: FormData) {
@@ -66,7 +64,6 @@ export async function editDashboard(id: string, initialPosition: number, formDat
         };
     }
     revalidatePath(HOME_PATH);
-    redirect(HOME_PATH);
 }
 
 export async function deleteDashboard(id: string) {
@@ -74,5 +71,4 @@ export async function deleteDashboard(id: string) {
 
     await sql`DELETE FROM dashboards WHERE id = ${id}`;
     revalidatePath(HOME_PATH);
-    redirect(HOME_PATH);
 }

@@ -2,7 +2,6 @@
 
 import { neon } from "@neondatabase/serverless";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { FIRST_ROW, ERROR_MESSAGES, DEFAULT_POSITION, POSITION_INCREMENT, HOME_PATH } from "../_contants";
 
 export async function createTask(id: string, formData: FormData) {
@@ -36,7 +35,6 @@ export async function createTask(id: string, formData: FormData) {
         };
     }
     revalidatePath(HOME_PATH);
-    redirect(HOME_PATH);
 }
 
 export async function editTask(id: string, initialPosition: number, formData: FormData) {
@@ -65,7 +63,6 @@ export async function editTask(id: string, initialPosition: number, formData: Fo
         };
     }
     revalidatePath(HOME_PATH);
-    redirect(HOME_PATH);
 }
 
 export async function deleteTask(id: string) {
@@ -74,5 +71,4 @@ export async function deleteTask(id: string) {
     await sql`DELETE FROM tasks WHERE id = ${id}`;
 
     revalidatePath(HOME_PATH);
-    redirect(HOME_PATH);
 }
