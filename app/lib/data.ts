@@ -1,18 +1,22 @@
-import { neon } from "@neondatabase/serverless";
+import supabase from "./supabaseClient";
 import { DashboardWithTask } from "../_types/dashboardType";
-import { ERROR_MESSAGES } from "../_contants";
+import { DATABASE_ERROR_MESSAGES } from "../_contants";
 
 export default async function fetchDashboards() {
     try {
-        const sql = neon(process.env.DATABASE_URL!);
+        const { data: dashboards, error: dashboardsError } = await supabase
+            .from("dashboards")
+            .select("id, name, position")
+            .order("position", { ascending: true });
 
-        const dashboards = await sql`
-        SELECT id, name, position FROM dashboards ORDER BY position ASC;
-    `;
+        if (dashboardsError) throw dashboardsError;
 
-    const tasks = await sql`
-        SELECT id, content, position, dashboard_id FROM tasks ORDER BY position ASC;
-    `;
+        const { data: tasks, error: tasksError } = await supabase
+            .from("tasks")
+            .select("id, content, position, dashboard_id")
+            .order("position", { ascending: true });
+
+        if (tasksError) throw tasksError;
 
         const dashboardsWithTasks = dashboards.map((dashboard) => ({
             ...dashboard,
@@ -21,7 +25,7 @@ export default async function fetchDashboards() {
 
         return dashboardsWithTasks;
     } catch (error) {
-        console.error(ERROR_MESSAGES.GET_FAIL, error);
-        throw new Error(ERROR_MESSAGES.GET_FAIL);
+        console.error(DATABASE_ERROR_MESSAGES.GET_FAIL, error);
+        throw new Error(DATABASE_ERROR_MESSAGES.GET_FAIL);
     }
 }

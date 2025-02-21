@@ -12,6 +12,11 @@ export const ERROR_MESSAGES = {
     GET_FAIL: "불러오기에 실패했습니다.",
 };
 
+export const DATABASE_ERROR_MESSAGES = {
+    GET_FAIL: "데이터를 불러오는 데 실패했습니다.",
+};
+
+
 export const SUCCESS_MESSAGES = {
     DASHBOARD_CREATED: "대시보드가 성공적으로 생성되었습니다.",
 };
