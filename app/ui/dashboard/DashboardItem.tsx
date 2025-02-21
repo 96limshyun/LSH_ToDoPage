@@ -12,14 +12,14 @@ interface DashboardItemProps {
 }
 
 export default function DashboardItem({ dashboard }: DashboardItemProps) {
-    const { id, name, tasks } = dashboard;
+    const { id, name, position, tasks } = dashboard;
 
     return (
         <div className="flex flex-col rounded-md border-[0.5px] bg-bolderCard w-72 gap-4 justify-between h-full">
             <div className="flex flex-col gap-6 p-4">
                 <div className="text-xl font-bold flex justify-between">
                     <h2>{name}</h2>
-                    <MenuButton id={id} name={name} />
+                    <MenuButton id={id} name={name} position={position}/>
                 </div>
 
                 <Droppable droppableId={id} type="TASK">
