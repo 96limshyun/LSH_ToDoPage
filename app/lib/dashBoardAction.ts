@@ -1,9 +1,15 @@
 "use server";
 
-import { neon } from "@neondatabase/serverless";
+import supabase from "./supabaseClient";
 import { State } from "../_types";
 import { revalidatePath } from "next/cache";
-import { FIRST_ROW, ERROR_MESSAGES, DEFAULT_POSITION, POSITION_INCREMENT, HOME_PATH } from "../_contants";
+import {
+    FIRST_ROW,
+    ERROR_MESSAGES,
+    DEFAULT_POSITION,
+    POSITION_INCREMENT,
+    HOME_PATH,
+} from "../_contants";
 
 export async function createDashboard(prevState: State, formData: FormData) {
     const inputValue = formData.get("name")?.toString().trim();
@@ -16,18 +22,24 @@ export async function createDashboard(prevState: State, formData: FormData) {
     }
 
     try {
-        const sql = neon(process.env.DATABASE_URL!);
+        // ✅ 현재 가장 큰 position 가져오기
+        const { data, error: fetchError } = await supabase
+            .from("dashboards")
+            .select("position")
+            .order("position", { ascending: false })
+            .limit(1);
 
-        const result = await sql`
-            SELECT COALESCE(MAX(position), 0) AS max_position FROM dashboards;
-        `;
-        const maxPosition = result[FIRST_ROW]?.max_position ?? DEFAULT_POSITION;
+        if (fetchError) throw fetchError;
+
+        const maxPosition = data?.[FIRST_ROW]?.position ?? DEFAULT_POSITION;
         const lastPosition = maxPosition + POSITION_INCREMENT;
 
-        await sql`
-            INSERT INTO dashboards (name, position)
-            VALUES (${inputValue}, ${lastPosition});
-        `;
+        // ✅ 새로운 대시보드 삽입
+        const { error: insertError } = await supabase
+            .from("dashboards")
+            .insert([{ name: inputValue, position: lastPosition }]);
+
+        if (insertError) throw insertError;
     } catch (error) {
         console.error(ERROR_MESSAGES.CREATE_FAIL, error);
         return {
@@ -38,7 +50,11 @@ export async function createDashboard(prevState: State, formData: FormData) {
     revalidatePath(HOME_PATH);
 }
 
-export async function editDashboard(id: string, initialPosition: number, formData: FormData) {
+export async function editDashboard(
+    id: string,
+    initialPosition: number,
+    formData: FormData
+) {
     const newInputValue = formData.get("name")?.toString().trim();
 
     if (!newInputValue) {
@@ -49,13 +65,12 @@ export async function editDashboard(id: string, initialPosition: number, formDat
     }
 
     try {
-        const sql = neon(process.env.DATABASE_URL!);
+        const { error: updateError } = await supabase
+            .from("dashboards")
+            .update({ name: newInputValue, position: initialPosition })
+            .eq("id", id);
 
-        await sql`
-            UPDATE dashboards
-            SET name = ${newInputValue}, position = ${initialPosition}
-            WHERE id = ${id};
-        `
+        if (updateError) throw updateError;
     } catch (error) {
         console.error(ERROR_MESSAGES.EDIT_FAIL, error);
         return {
@@ -67,8 +82,11 @@ export async function editDashboard(id: string, initialPosition: number, formDat
 }
 
 export async function deleteDashboard(id: string) {
-    const sql = neon(process.env.DATABASE_URL!);
+    const { error: deleteError } = await supabase
+        .from("dashboards")
+        .delete()
+        .eq("id", id);
 
-    await sql`DELETE FROM dashboards WHERE id = ${id}`;
+    if (deleteError) throw deleteError;
     revalidatePath(HOME_PATH);
 }

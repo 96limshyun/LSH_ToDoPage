@@ -1,9 +1,14 @@
 "use server";
 
-import { neon } from "@neondatabase/serverless";
+import supabase from "./supabaseClient";
 import { revalidatePath } from "next/cache";
-import { FIRST_ROW, ERROR_MESSAGES, DEFAULT_POSITION, POSITION_INCREMENT, HOME_PATH } from "../_contants";
-
+import {
+    FIRST_ROW,
+    ERROR_MESSAGES,
+    DEFAULT_POSITION,
+    POSITION_INCREMENT,
+    HOME_PATH,
+} from "../_contants";
 export async function createTask(id: string, formData: FormData) {
     const inputValue = formData.get("content")?.toString().trim();
 
@@ -15,18 +20,26 @@ export async function createTask(id: string, formData: FormData) {
     }
 
     try {
-        const sql = neon(process.env.DATABASE_URL!);
+        const { data, error: fetchError } = await supabase
+            .from("tasks")
+            .select("position")
+            .order("position", { ascending: false })
+            .limit(1);
 
-        const result = await sql`
-            SELECT COALESCE(MAX(position), 0) AS max_position FROM tasks;
-        `;
-        const maxPosition = result[FIRST_ROW]?.max_position ?? DEFAULT_POSITION;
+        if (fetchError) throw fetchError;
+
+        const maxPosition = data?.[FIRST_ROW]?.position ?? DEFAULT_POSITION;
         const lastPosition = maxPosition + POSITION_INCREMENT;
 
-        await sql`
-            INSERT INTO tasks (content, dashboard_id, position)
-            VALUES (${inputValue}, ${id}, ${lastPosition});
-        `;
+        const { error: insertError } = await supabase.from("tasks").insert([
+            {
+                content: inputValue,
+                dashboard_id: id,
+                position: lastPosition,
+            },
+        ]);
+
+        if (insertError) throw insertError;
     } catch (error) {
         console.error(ERROR_MESSAGES.CREATE_FAIL, error);
         return {
@@ -37,7 +50,11 @@ export async function createTask(id: string, formData: FormData) {
     revalidatePath(HOME_PATH);
 }
 
-export async function editTask(id: string, initialPosition: number, formData: FormData) {
+export async function editTask(
+    id: string,
+    initialPosition: number,
+    formData: FormData
+) {
     const newContent = formData.get("content")?.toString().trim();
 
     if (!newContent) {
@@ -48,13 +65,12 @@ export async function editTask(id: string, initialPosition: number, formData: Fo
     }
 
     try {
-        const sql = neon(process.env.DATABASE_URL!);
+        const { error: updateError } = await supabase
+            .from("tasks")
+            .update({ content: newContent, position: initialPosition })
+            .eq("id", id);
 
-        await sql`
-            UPDATE tasks
-            SET content = ${newContent}, position = ${initialPosition}
-            WHERE id = ${id};
-        `
+        if (updateError) throw updateError;
     } catch (error) {
         console.error(ERROR_MESSAGES.EDIT_FAIL, error);
         return {
@@ -66,9 +82,11 @@ export async function editTask(id: string, initialPosition: number, formData: Fo
 }
 
 export async function deleteTask(id: string) {
-    const sql = neon(process.env.DATABASE_URL!);
+    const { error: deleteError } = await supabase
+        .from("tasks")
+        .delete()
+        .eq("id", id);
 
-    await sql`DELETE FROM tasks WHERE id = ${id}`;
-
+    if (deleteError) throw deleteError;
     revalidatePath(HOME_PATH);
 }

@@ -1,23 +1,23 @@
 "use server";
-import { neon } from "@neondatabase/serverless";
+
+import supabase from "./supabaseClient";
 import { HOME_PATH } from "../_contants";
 import { revalidatePath } from "next/cache";
 import { DND_Result } from "../_types/dndType";
 
-
 export async function updateDashBoardPosition(result: DND_Result) {
     if (!result.destination) return;
 
-    const sql = neon(process.env.DATABASE_URL!);
     const { source, destination } = result;
     const fromIndex = source.index;
     const toIndex = destination.index;
 
-    const currentDashboards = await sql`
-        SELECT id, position FROM dashboards ORDER BY position ASC;
-    `;
+    const { data: currentDashboards, error: fetchError } = await supabase
+        .from("dashboards")
+        .select("*") 
+        .order("position", { ascending: true });
 
-    if (!currentDashboards.length) return;
+    if (fetchError || !currentDashboards?.length) return;
 
     const movingDashboard = currentDashboards[fromIndex];
 
@@ -26,63 +26,62 @@ export async function updateDashBoardPosition(result: DND_Result) {
     const filteredDashboards = currentDashboards.filter((_, index) => index !== fromIndex);
     filteredDashboards.splice(toIndex, 0, movingDashboard);
 
-    await Promise.all(
-        filteredDashboards.map(async (dashboard, index) => {
-            await sql`
-                UPDATE dashboards
-                SET position = ${index + 1}
-                WHERE id = ${dashboard.id};
-            `;
-        })
-    );
+    const updates = filteredDashboards.map((dashboard, index) => ({
+        id: dashboard.id,
+        name: dashboard.name,
+        position: index + 1,
+    }));
+
+    const { error: updateError } = await supabase
+        .from("dashboards")
+        .upsert(updates, { onConflict: "id" });
+
+    if (updateError) return
 
     revalidatePath(HOME_PATH);
 }
 
 export async function updateTaskPosition(result: DND_Result) {
     if (!result.destination) return;
-    
-    const sql = neon(process.env.DATABASE_URL!);
 
     const { draggableId: taskId, source, destination } = result;
     const fromDashboardId = source.droppableId;
     const toDashboardId = destination.droppableId;
     const newIndex = destination.index;
 
-    const currentTasks = await sql`
-        SELECT id, position FROM tasks WHERE dashboard_id = ${toDashboardId} ORDER BY position ASC;
-    `;
+    const { data: currentTasks, error: fetchError } = await supabase
+        .from("tasks")
+        .select("id, position")
+        .eq("dashboard_id", toDashboardId)
+        .order("position", { ascending: true });
+
+    if (fetchError) return;
 
     if (fromDashboardId === toDashboardId) {
         const filteredTasks = currentTasks.filter((task) => task.id !== taskId);
+        filteredTasks.splice(newIndex, 0, { id: taskId, position: newIndex });
 
-        filteredTasks.splice(newIndex, 0, { id: taskId });
+        const updates = filteredTasks.map((task, index) => ({
+            id: task.id,
+            position: index,
+        }));
 
-        for (const [index, task] of filteredTasks.entries()) {
-            await sql`
-                UPDATE tasks
-                SET position = ${index}
-                WHERE id = ${task.id};
-            `;
-        }
+        const { error: updateError } = await supabase
+            .from("tasks")
+            .upsert(updates, { onConflict: "id" });
+
+        if (updateError) return;
     } else {
-        await sql`
-            UPDATE tasks
-            SET position = position - 1
-            WHERE dashboard_id = ${fromDashboardId} AND position > ${source.index};
-        `;
+        await supabase.rpc("decrement_task_position", { from_dashboard_id: fromDashboardId, from_index: source.index });
 
-        await sql`
-            UPDATE tasks
-            SET position = position + 1
-            WHERE dashboard_id = ${toDashboardId} AND position >= ${newIndex};
-        `;
+        await supabase.rpc("increment_task_position", { to_dashboard_id: toDashboardId, new_index: newIndex });
 
-        await sql`
-            UPDATE tasks
-            SET dashboard_id = ${toDashboardId}, position = ${newIndex}
-            WHERE id = ${taskId};
-        `;
+        const { error: moveError } = await supabase
+            .from("tasks")
+            .update({ dashboard_id: toDashboardId, position: newIndex })
+            .eq("id", taskId);
+
+        if (moveError) return;
     }
 
     revalidatePath(HOME_PATH);
