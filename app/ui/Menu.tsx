@@ -33,7 +33,7 @@ export default function Menu({ path, deleteAction }: MenuProps) {
                         action={deleteAction}
                         className="p-2 hover:bg-gray-500 text-red-500"
                     >
-                        <button>Delete</button>
+                        <button type="submit">Delete</button>
                     </form>
                 </div>
             )}

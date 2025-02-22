@@ -78,12 +78,39 @@ export async function editDashboard(
     revalidatePath(HOME_PATH);
 }
 
-export async function deleteDashboard(id: string) {
-    const { error: deleteError } = await supabase
+export async function deleteDashboard(id: string, deletePosition: number) {
+    await supabase
+        .from("tasks")
+        .delete()
+        .eq("dashboard_id", id);
+
+    await supabase
         .from("dashboards")
         .delete()
         .eq("id", id);
+    
+    const { data: dashboards, error: fetchError } = await supabase
+    .from("dashboards")
+    .select("*")
+    .gt("position", deletePosition)
+    .order("position", { ascending: true });
+    
+    if (fetchError || !dashboards?.length) {
+        revalidatePath(HOME_PATH);
+        return;
+    }
+    
+    const updates = dashboards.map(dashboard => ({
+        id: dashboard.id,
+        name: dashboard.name,
+        position: dashboard.position - 1,
+    }));
 
-    if (deleteError) throw deleteError;
+    const { error: updateError } = await supabase
+        .from("dashboards")
+        .upsert(updates, { onConflict: "id" });
+
+    if (updateError) throw updateError;
+
     revalidatePath(HOME_PATH);
 }
