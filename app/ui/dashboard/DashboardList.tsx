@@ -3,24 +3,14 @@
 import { DashboardWithTask } from "@/app/_types/dashboardType";
 import DashboardItem from "./DashboardItem";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
-import {
-    updateDashBoardPosition,
-    updateTaskPosition,
-} from "@/app/lib/dndAction";
-import { DND_Result } from "@/app/_types/dndType";
 import DashBoardAddBtn from "./DashBoardAddBtn";
+import useDashBoard from "@/app/_hooks/useDashBoard";
 interface DashboardsProps {
-    dashboards: DashboardWithTask[];
+    initialDashboards: DashboardWithTask[];
 }
 
-export default function DashboardList({ dashboards }: DashboardsProps) {
-
-    const handleDragEnd = async (result: DND_Result) => {
-        await (result.type === "DASHBOARD"
-            ? updateDashBoardPosition(result)
-            : updateTaskPosition(result));
-    };
-
+export default function DashboardList({ initialDashboards }: DashboardsProps) {
+    const { localDashboards, handleDragEnd } = useDashBoard({ initialDashboards: initialDashboards });
     return (
         <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable
@@ -34,7 +24,7 @@ export default function DashboardList({ dashboards }: DashboardsProps) {
                         {...provided.droppableProps}
                         className="flex w-full h-full gap-4"
                     >
-                        {dashboards.map((dashboard, index) => (
+                        {localDashboards.map((dashboard, index) => (
                             <Draggable
                                 key={dashboard.id}
                                 draggableId={dashboard.id.toString()}

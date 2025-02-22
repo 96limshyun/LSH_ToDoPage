@@ -10,7 +10,7 @@ export default async function Page() {
                 <h1 className="font-bold text-2xl">LSH TO DO PAGE</h1>
             </div>
             <main className="w-full h-full p-3">
-                <DashboardList dashboards={dashboards} />
+                <DashboardList initialDashboards={dashboards} />
             </main>
         </>
     );
