@@ -1,16 +1,33 @@
 "use client";
 
 import Modal from "@/app/ui/Modal";
-import CreateTask from "@/app/ui/task/Create";
 import { use } from "react";
 import { Params } from "@/app/_types";
+import Card from "@/app/ui/Card";
+import { FORM_CARD_TITLES, INPUT_NAME, OK_BUTTON_TEXT } from "@/app/_constants";
+import { createTask } from "@/app/lib/taskAction";
+import useFormAction from "@/app/_hooks/useFormAction";
+import Form from "@/app/ui/Form";
 
-export default function CreatePage({ params }: { params: Promise<Params> }) {
+export default function Page({ params }: { params: Promise<Params> }) {
     const unwrappedParams = use(params);
     const id = unwrappedParams.id;
+
+    const { state, formAction } = useFormAction((formData) =>
+        createTask(id, formData)
+    );
+
     return (
         <Modal>
-            <CreateTask id={id}/>
+            <Card title={FORM_CARD_TITLES.CREATE_TASK}>
+                <Form
+                    state={state}
+                    formAction={formAction}
+                    inputName={INPUT_NAME.TASK}
+                    initialValue=""
+                    okButtonText={OK_BUTTON_TEXT.CREATE}
+                />
+            </Card>
         </Modal>
     );
 }

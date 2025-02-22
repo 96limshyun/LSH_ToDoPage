@@ -1,6 +1,16 @@
-export const DEFAULT_POSITION = 0;
+export const DEFAULT_POSITION = -1;
 export const POSITION_INCREMENT = 1;
 export const FIRST_ROW = 0;
+
+export const OK_BUTTON_TEXT = {
+    CREATE: "Create",
+    EDIT: "Edit"
+} as const
+
+export const INPUT_NAME = {
+    DASHBOARD: "name",
+    TASK: "content"
+} as const
 
 export const ERROR_MESSAGES = {
     NAME_REQUIRED: "이름이 필요합니다.",
@@ -19,6 +29,13 @@ export const DATABASE_ERROR_MESSAGES = {
 
 export const SUCCESS_MESSAGES = {
     DASHBOARD_CREATED: "대시보드가 성공적으로 생성되었습니다.",
+};
+
+export const FORM_CARD_TITLES = {
+    CREATE_DASHBOARD: "Create Dashboard",
+    EDIT_DASHBOARD: "Edit Dashboard",
+    CREATE_TASK: "Create Task",
+    EDIT_TASK: "Edit Task",
 };
 
 export const HOME_PATH = "/";

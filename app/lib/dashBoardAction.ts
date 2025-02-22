@@ -1,7 +1,6 @@
 "use server";
 
 import supabase from "./supabaseClient";
-import { State } from "../_types";
 import { revalidatePath } from "next/cache";
 import {
     FIRST_ROW,
@@ -9,9 +8,9 @@ import {
     DEFAULT_POSITION,
     POSITION_INCREMENT,
     HOME_PATH,
-} from "../_contants";
+} from "../_constants";
 
-export async function createDashboard(prevState: State, formData: FormData) {
+export async function createDashboard(formData: FormData) {
     const inputValue = formData.get("name")?.toString().trim();
 
     if (!inputValue) {
@@ -22,7 +21,6 @@ export async function createDashboard(prevState: State, formData: FormData) {
     }
 
     try {
-        // ✅ 현재 가장 큰 position 가져오기
         const { data, error: fetchError } = await supabase
             .from("dashboards")
             .select("position")
@@ -34,7 +32,6 @@ export async function createDashboard(prevState: State, formData: FormData) {
         const maxPosition = data?.[FIRST_ROW]?.position ?? DEFAULT_POSITION;
         const lastPosition = maxPosition + POSITION_INCREMENT;
 
-        // ✅ 새로운 대시보드 삽입
         const { error: insertError } = await supabase
             .from("dashboards")
             .insert([{ name: inputValue, position: lastPosition }]);
@@ -81,12 +78,39 @@ export async function editDashboard(
     revalidatePath(HOME_PATH);
 }
 
-export async function deleteDashboard(id: string) {
-    const { error: deleteError } = await supabase
+export async function deleteDashboard(id: string, deletePosition: number) {
+    await supabase
+        .from("tasks")
+        .delete()
+        .eq("dashboard_id", id);
+
+    await supabase
         .from("dashboards")
         .delete()
         .eq("id", id);
+    
+    const { data: dashboards, error: fetchError } = await supabase
+    .from("dashboards")
+    .select("*")
+    .gt("position", deletePosition)
+    .order("position", { ascending: true });
+    
+    if (fetchError || !dashboards?.length) {
+        revalidatePath(HOME_PATH);
+        return;
+    }
+    
+    const updates = dashboards.map(dashboard => ({
+        id: dashboard.id,
+        name: dashboard.name,
+        position: dashboard.position - 1,
+    }));
 
-    if (deleteError) throw deleteError;
+    const { error: updateError } = await supabase
+        .from("dashboards")
+        .upsert(updates, { onConflict: "id" });
+
+    if (updateError) throw updateError;
+
     revalidatePath(HOME_PATH);
 }

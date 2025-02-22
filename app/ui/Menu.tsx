@@ -1,20 +1,17 @@
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 import { EllipsisHorizontalIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
-import useOnClickOutside from "@/app/_hooks/useOnClickOutside";
-import { deleteDashboard } from "@/app/lib/dashBoardAction";
-interface MenuButtonProps {
-    id: string;
-    name: string;
-    position: number;
+import useOnClickOutside from "../_hooks/useOnClickOutside";
+
+interface MenuProps {
+    path: string;
+    deleteAction: () => void;
 }
 
-export default function MenuButton({ id, name, position }: MenuButtonProps) {
+export default function Menu({ path, deleteAction }: MenuProps) {
     const [isOpen, setOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     useOnClickOutside(menuRef, () => setOpen(false));
-
-    const deleteDashboardWithId = deleteDashboard.bind(null, id);
 
     return (
         <div ref={menuRef} className="relative">
@@ -25,7 +22,7 @@ export default function MenuButton({ id, name, position }: MenuButtonProps) {
             {isOpen && (
                 <div className="absolute top-full mt-2 right-0 w-20 bg-defaultCard shadow-lg border rounded-md z-50 flex flex-col text-sm text-center font-bold">
                     <Link
-                        href={`/dashboard/edit/${id}?name=${name}&position=${position}`}
+                        href={`${path}`}
                         className="p-2 hover:bg-gray-500"
                         onClick={() => setOpen(false)}
                         scroll={false}
@@ -33,10 +30,10 @@ export default function MenuButton({ id, name, position }: MenuButtonProps) {
                         Edit
                     </Link>
                     <form
-                        action={deleteDashboardWithId}
+                        action={deleteAction}
                         className="p-2 hover:bg-gray-500 text-red-500"
                     >
-                        <button>Delete</button>
+                        <button type="submit">Delete</button>
                     </form>
                 </div>
             )}

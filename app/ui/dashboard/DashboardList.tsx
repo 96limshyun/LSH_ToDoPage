@@ -1,27 +1,16 @@
 "use client";
 
 import { DashboardWithTask } from "@/app/_types/dashboardType";
-import { PlusIcon } from "@heroicons/react/20/solid";
-import Link from "next/link";
 import DashboardItem from "./DashboardItem";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
-import {
-    updateDashBoardPosition,
-    updateTaskPosition,
-} from "@/app/lib/dndAction";
-import { DND_Result } from "@/app/_types/dndType";
+import DashBoardAddBtn from "./DashBoardAddBtn";
+import useDashBoard from "@/app/_hooks/useDashBoard";
 interface DashboardsProps {
-    dashboards: DashboardWithTask[];
+    initialDashboards: DashboardWithTask[];
 }
 
-export default function Dashboards({ dashboards }: DashboardsProps) {
-
-    const handleDragEnd = async (result: DND_Result) => {
-        await (result.type === "DASHBOARD"
-            ? updateDashBoardPosition(result)
-            : updateTaskPosition(result));
-    };
-
+export default function DashboardList({ initialDashboards }: DashboardsProps) {
+    const { localDashboards, handleDragEnd } = useDashBoard({ initialDashboards: initialDashboards });
     return (
         <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable
@@ -35,7 +24,7 @@ export default function Dashboards({ dashboards }: DashboardsProps) {
                         {...provided.droppableProps}
                         className="flex w-full h-full gap-4"
                     >
-                        {dashboards.map((dashboard, index) => (
+                        {localDashboards.map((dashboard, index) => (
                             <Draggable
                                 key={dashboard.id}
                                 draggableId={dashboard.id.toString()}
@@ -56,13 +45,7 @@ export default function Dashboards({ dashboards }: DashboardsProps) {
                             </Draggable>
                         ))}
                         {provided.placeholder}
-                        <Link
-                            href="/dashboard/create"
-                            scroll={false}
-                            className="w-6 h-6 bg-defaultCard border-[0.5px] rounded cursor-pointer flex items-center justify-center"
-                        >
-                            <PlusIcon className="w-6 h-6" />
-                        </Link>
+                        <DashBoardAddBtn/>
                     </div>
                 )}
             </Droppable>
