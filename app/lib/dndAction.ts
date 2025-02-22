@@ -3,85 +3,67 @@
 import supabase from "./supabaseClient";
 import { HOME_PATH } from "../_constants";
 import { revalidatePath } from "next/cache";
-import { DND_Result } from "../_types/dndType";
+import { DashboardWithTask, Task } from "../_types/dashboardType";
 
-export async function updateDashBoardPosition(result: DND_Result) {
-    if (!result.destination) return;
+export async function updateDashBoardPosition(
+    updatedDashBoards: DashboardWithTask[]
+) {
 
-    const { source, destination } = result;
-    const fromIndex = source.index;
-    const toIndex = destination.index;
-
-    const { data: currentDashboards, error: fetchError } = await supabase
-        .from("dashboards")
-        .select("*") 
-        .order("position", { ascending: true });
-
-    if (fetchError || !currentDashboards?.length) return;
-
-    const movingDashboard = currentDashboards[fromIndex];
-
-    if (!movingDashboard) return;
-
-    const filteredDashboards = currentDashboards.filter((_, index) => index !== fromIndex);
-    filteredDashboards.splice(toIndex, 0, movingDashboard);
-
-    const updates = filteredDashboards.map((dashboard, index) => ({
+    const updates = updatedDashBoards.map((dashboard, index) => ({
         id: dashboard.id,
         name: dashboard.name,
-        position: index + 1,
+        position: index,
     }));
 
     const { error: updateError } = await supabase
         .from("dashboards")
         .upsert(updates, { onConflict: "id" });
 
-    if (updateError) return
+    if (updateError) return;
 
     revalidatePath(HOME_PATH);
 }
 
-export async function updateTaskPosition(result: DND_Result) {
-    if (!result.destination) return;
-
-    const { draggableId: taskId, source, destination } = result;
-    const fromDashboardId = source.droppableId;
-    const toDashboardId = destination.droppableId;
-    const newIndex = destination.index;
-
-    const { data: currentTasks, error: fetchError } = await supabase
-        .from("tasks")
-        .select("id, position")
-        .eq("dashboard_id", toDashboardId)
-        .order("position", { ascending: true });
-
-    if (fetchError) return;
-
+export async function updateTaskPosition(
+    fromDashboardId: string,
+    toDashboardId: string,
+    fromTasks: Task[],
+    toTasks: Task[]
+) {
     if (fromDashboardId === toDashboardId) {
-        const filteredTasks = currentTasks.filter((task) => task.id !== taskId);
-        filteredTasks.splice(newIndex, 0, { id: taskId, position: newIndex });
-
-        const updates = filteredTasks.map((task, index) => ({
+        const updates = fromTasks.map((task, index) => ({
             id: task.id,
+            content: task.content,
             position: index,
+            dashboard_id: fromDashboardId,
         }));
 
         const { error: updateError } = await supabase
             .from("tasks")
             .upsert(updates, { onConflict: "id" });
 
-        if (updateError) return;
-    } else {
-        await supabase.rpc("decrement_task_position", { from_dashboard_id: fromDashboardId, from_index: source.index });
+        if (updateError) throw updateError;
+    } 
+    else {
+        const fromUpdates = fromTasks.map((task, index) => ({
+            id: task.id,
+            content: task.content,
+            position: index,
+            dashboard_id: fromDashboardId,
+        }));
 
-        await supabase.rpc("increment_task_position", { to_dashboard_id: toDashboardId, new_index: newIndex });
+        const toUpdates = toTasks.map((task, index) => ({
+            id: task.id,
+            content: task.content,
+            position: index,
+            dashboard_id: toDashboardId,
+        }));
 
-        const { error: moveError } = await supabase
+        const { error: updateError } = await supabase
             .from("tasks")
-            .update({ dashboard_id: toDashboardId, position: newIndex })
-            .eq("id", taskId);
+            .upsert([...fromUpdates, ...toUpdates], { onConflict: "id" });
 
-        if (moveError) return;
+        if (updateError) throw updateError;
     }
 
     revalidatePath(HOME_PATH);

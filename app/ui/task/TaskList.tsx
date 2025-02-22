@@ -28,7 +28,7 @@ export default function TaskList({ dashBoardId, tasks}: TaskListProps) {
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
                                 >
-                                    <TaskItem task={task} />
+                                    <TaskItem task={task} dashBoardId={dashBoardId}/>
                                 </div>
                             )}
                         </Draggable>

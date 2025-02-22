@@ -1,3 +1,4 @@
+"use client"
 import Card from "@/app/ui/Card";
 import { FORM_CARD_TITLES, INPUT_NAME, OK_BUTTON_TEXT } from "@/app/_constants";
 import useFormAction from "@/app/_hooks/useFormAction";

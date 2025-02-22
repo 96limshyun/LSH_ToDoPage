@@ -1,4 +1,4 @@
-export const DEFAULT_POSITION = 0;
+export const DEFAULT_POSITION = -1;
 export const POSITION_INCREMENT = 1;
 export const FIRST_ROW = 0;
 
