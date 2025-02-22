@@ -1,6 +1,6 @@
 import supabase from "./supabaseClient";
 import { DashboardWithTask } from "../_types/dashboardType";
-import { DATABASE_ERROR_MESSAGES } from "../_contants";
+import { DATABASE_ERROR_MESSAGES } from "../_constants";
 
 export default async function fetchDashboards() {
     try {

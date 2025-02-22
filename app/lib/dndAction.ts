@@ -1,7 +1,7 @@
 "use server";
 
 import supabase from "./supabaseClient";
-import { HOME_PATH } from "../_contants";
+import { HOME_PATH } from "../_constants";
 import { revalidatePath } from "next/cache";
 import { DND_Result } from "../_types/dndType";
 

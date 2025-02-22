@@ -8,7 +8,7 @@ import {
     DEFAULT_POSITION,
     POSITION_INCREMENT,
     HOME_PATH,
-} from "../_contants";
+} from "../_constants";
 export async function createTask(id: string, formData: FormData) {
     const inputValue = formData.get("content")?.toString().trim();
 

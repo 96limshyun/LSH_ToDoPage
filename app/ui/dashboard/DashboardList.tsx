@@ -1,8 +1,6 @@
 "use client";
 
 import { DashboardWithTask } from "@/app/_types/dashboardType";
-import { PlusIcon } from "@heroicons/react/20/solid";
-import Link from "next/link";
 import DashboardItem from "./DashboardItem";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import {
@@ -10,11 +8,12 @@ import {
     updateTaskPosition,
 } from "@/app/lib/dndAction";
 import { DND_Result } from "@/app/_types/dndType";
+import DashBoardAddBtn from "./DashBoardAddBtn";
 interface DashboardsProps {
     dashboards: DashboardWithTask[];
 }
 
-export default function Dashboards({ dashboards }: DashboardsProps) {
+export default function DashboardList({ dashboards }: DashboardsProps) {
 
     const handleDragEnd = async (result: DND_Result) => {
         await (result.type === "DASHBOARD"
@@ -56,13 +55,7 @@ export default function Dashboards({ dashboards }: DashboardsProps) {
                             </Draggable>
                         ))}
                         {provided.placeholder}
-                        <Link
-                            href="/dashboard/create"
-                            scroll={false}
-                            className="w-6 h-6 bg-defaultCard border-[0.5px] rounded cursor-pointer flex items-center justify-center"
-                        >
-                            <PlusIcon className="w-6 h-6" />
-                        </Link>
+                        <DashBoardAddBtn/>
                     </div>
                 )}
             </Droppable>
