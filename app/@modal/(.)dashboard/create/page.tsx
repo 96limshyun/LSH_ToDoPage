@@ -8,15 +8,16 @@ import Form from "@/app/ui/Form";
 import Modal from "@/app/ui/Modal";
 
 export default function Page() {
-    const { state, formAction } = useFormAction((formData) =>
+    const { state, formAction, isPending } = useFormAction((formData) =>
         createDashboard(formData)
-    );
+    );  
 
     return (
         <Modal>
             <Card title={FORM_CARD_TITLES.CREATE_DASHBOARD}>
                 <Form
                     state={state}
+                    isPending={isPending}
                     formAction={formAction}
                     inputName={INPUT_NAME.DASHBOARD}
                     initialValue=""

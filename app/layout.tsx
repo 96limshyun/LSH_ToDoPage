@@ -16,9 +16,11 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className="flex justify-center items-center h-screen p-10 flex-col gap-4 min-w-[1280]">
-                {children}
-                {modal}
+            <body className="flex h-screen p-10 flex-col gap-4 min-w-[1280]">
+                <main className="my-auto h-[600px]">
+                    {children}
+                    {modal}
+                </main>
             </body>
         </html>
     );
