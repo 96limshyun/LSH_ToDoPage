@@ -17,13 +17,14 @@ export default function Page({ params }: { params: Promise<Params> }) {
     const content = searchParams.get("content") || "";
     const position = Number(searchParams.get("position")) || 0;
 
-    const { state, formAction } = useFormAction((formData) =>
+    const { state, formAction, isPending } = useFormAction((formData) =>
         editTask(id, position, formData)
     );
     return (
         <Card title={FORM_CARD_TITLES.EDIT_TASK}>
             <Form
                 state={state}
+                isPending={isPending}
                 formAction={formAction}
                 inputName={INPUT_NAME.TASK}
                 initialValue={content}

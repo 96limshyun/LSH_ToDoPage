@@ -17,7 +17,7 @@ export default function useFormAction(action: FormAction) {
         return result;
     };
 
-    const [state, formAction] = useActionState(handler, initialState);
+    const [state, formAction, isPending] = useActionState(handler, initialState);
 
-    return { state, formAction };
+    return { state, formAction, isPending };
 }

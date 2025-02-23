@@ -13,7 +13,7 @@ export default function Page({ params }: { params: Promise<Params> }) {
     const unwrappedParams = use(params);
     const id = unwrappedParams.id;
 
-    const { state, formAction } = useFormAction((formData) =>
+    const { state, formAction, isPending } = useFormAction((formData) =>
         createTask(id, formData)
     );
 
@@ -22,6 +22,7 @@ export default function Page({ params }: { params: Promise<Params> }) {
             <Card title={FORM_CARD_TITLES.CREATE_TASK}>
                 <Form
                     state={state}
+                    isPending={isPending}
                     formAction={formAction}
                     inputName={INPUT_NAME.TASK}
                     initialValue=""

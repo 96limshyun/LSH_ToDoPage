@@ -13,7 +13,7 @@ export default function TaskItem({ task, dashBoardId }: TaskItemProps) {
     
     return (
         <div className="p-4 bg-defaultCard rounded border-[0.5px] flex justify-between">
-            <div>{content}</div>
+            <div className="overflow-hidden overflow-ellipsis">{content}</div>
             <Menu path={`/task/edit/${taskId}?content=${content}&position=${position}`} deleteAction={deleteTaskWithId} />
         </div>
     );
