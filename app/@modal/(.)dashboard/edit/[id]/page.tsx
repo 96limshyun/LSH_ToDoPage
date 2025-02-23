@@ -18,13 +18,14 @@ export default function Page({ params }: { params: Promise<Params> }) {
     const name = searchParams.get("name") || "";
     const position = Number(searchParams.get("position")) || 0;
 
-    const { state, formAction } = useFormAction((formData) => editDashboard(id, position, formData));
+    const { state, formAction, isPending } = useFormAction((formData) => editDashboard(id, position, formData));
 
     return (
         <Modal>
             <Card title={FORM_CARD_TITLES.EDIT_DASHBOARD}>
                 <Form
                     state={state}
+                    isPending={isPending}
                     formAction={formAction}
                     inputName={INPUT_NAME.DASHBOARD}
                     initialValue={name}
