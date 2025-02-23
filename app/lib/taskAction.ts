@@ -96,7 +96,7 @@ export async function deleteTask(id: string, deletePosition: number, dashBoardId
 
     if (fetchError || !tasks?.length) {
         revalidatePath(HOME_PATH);
-        throw fetchError;
+        return;
     }
 
     const updates = tasks.map(task => ({
