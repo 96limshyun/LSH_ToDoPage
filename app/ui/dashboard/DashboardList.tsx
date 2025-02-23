@@ -10,7 +10,7 @@ interface DashboardsProps {
 }
 
 export default function DashboardList({ initialDashboards }: DashboardsProps) {
-    const { localDashboards, handleDragEnd } = useDashBoard({ initialDashboards: initialDashboards });
+    const { dashboards, handleDragEnd } = useDashBoard({ initialDashboards: initialDashboards });
     return (
         <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable
@@ -24,7 +24,7 @@ export default function DashboardList({ initialDashboards }: DashboardsProps) {
                         {...provided.droppableProps}
                         className="flex w-full h-full gap-4"
                     >
-                        {localDashboards.map((dashboard, index) => (
+                        {dashboards.map((dashboard, index) => (
                             <Draggable
                                 key={dashboard.id}
                                 draggableId={dashboard.id.toString()}

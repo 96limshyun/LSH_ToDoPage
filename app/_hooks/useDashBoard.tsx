@@ -8,16 +8,16 @@ interface UseDashboardDragProps {
 }
 
 export default function useDashBoard({initialDashboards}: UseDashboardDragProps) {
-    const [localDashboards, setLocalDashboards] = useState<DashboardWithTask[]>(initialDashboards);
+    const [dashboards, setDashboards] = useState<DashboardWithTask[]>(initialDashboards);
 
     const handleDashboardDrag = async (result: DND_Result) => {
         const { source, destination } = result;
         if (!destination) return;
 
-        const updatedDashboards = [...localDashboards];
+        const updatedDashboards = [...dashboards];
         const [moved] = updatedDashboards.splice(source.index, 1);
         updatedDashboards.splice(destination.index, 0, moved);
-        setLocalDashboards(updatedDashboards);
+        setDashboards(updatedDashboards);
 
         await updateDashBoardPosition(updatedDashboards);
     };
@@ -26,7 +26,7 @@ export default function useDashBoard({initialDashboards}: UseDashboardDragProps)
         const { source, destination } = result;
         if (!destination) return;
 
-        const updatedDashboards = [...localDashboards];
+        const updatedDashboards = [...dashboards];
         const fromDashboardId = source.droppableId;
         const toDashboardId = destination.droppableId;
         const fromIndex = source.index
@@ -60,8 +60,8 @@ export default function useDashBoard({initialDashboards}: UseDashboardDragProps)
     }
 
     useEffect(() => {
-        setLocalDashboards(initialDashboards)
+        setDashboards(initialDashboards)
     }, [initialDashboards])
 
-    return {localDashboards, handleDragEnd}
+    return {dashboards, handleDragEnd}
 }
