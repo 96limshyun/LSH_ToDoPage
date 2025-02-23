@@ -24,7 +24,7 @@ export default function Form({
     const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => inputRef?.current?.focus(), []);
-    
+
     return (
         <form action={formAction} className="flex flex-col p-4 gap-4">
             <input
@@ -40,6 +40,7 @@ export default function Form({
             <div className="flex justify-end gap-2 text-sm font-bold">
                 <button
                     type="button"
+                    disabled={isPending}
                     className="w-20 p-2 bg-black rounded border-[0.5px] hover:bg-gray-500 text-red-500 flex justify-center items-center"
                     onClick={routeBack}
                 >
@@ -47,6 +48,7 @@ export default function Form({
                 </button>
                 <button
                     type="submit"
+                    disabled={isPending}
                     className="w-20 p-2 bg-black rounded border-[0.5px] hover:bg-gray-500 text-blue-500 flex justify-center items-center"
                 >
                     {isPending ? (
