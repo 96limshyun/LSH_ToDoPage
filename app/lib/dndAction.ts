@@ -19,7 +19,7 @@ export async function updateDashBoardPosition(
         .from("dashboards")
         .upsert(updates, { onConflict: "id" });
 
-    if (updateError) return;
+    if (updateError) throw updateError
 
     revalidatePath(HOME_PATH);
 }
